@@ -1,0 +1,11 @@
+apiVersion: network.kubesphere.io/v1alpha2
+kind: Eip
+metadata:
+  name: eip-pool
+  annotations:
+    eip.openelb.kubesphere.io/is-default-eip: "true"
+spec:
+  address: 192.168.200.10-192.168.200.19
+  protocol: layer2
+  interface: ens33
+  disable: false

@@ -1,0 +1,59 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: traefik-deploy
+  namespace: traefik
+  labels:
+    app: traefik
+
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: traefik
+
+  template:
+    metadata:
+      labels:
+        app: traefik
+
+    spec:
+      serviceAccountName: traefik-ingress-controller
+
+      containers:
+        - name: traefik
+          image: shixiaochuangk8s/traefik:v3.6
+          imagePullPolicy: IfNotPresent
+
+          args:
+            - --configfile=/config/traefik.yaml
+
+          volumeMounts:
+            - name: config
+              mountPath: /config
+
+          ports:
+            - name: web
+              containerPort: 80
+            - name: websecure
+              containerPort: 443
+            - name: admin
+              containerPort: 8080
+            - name: tcpep
+              containerPort: 8083
+            - name: udpep
+              containerPort: 8084
+              protocol: UDP
+
+          resources:
+            requests:
+              memory: "100Mi"
+              cpu: "100m"
+            limits:
+              memory: "200Mi"
+              cpu: "500m"
+
+      volumes:
+        - name: config
+          configMap:
+            name: traefik-cfg

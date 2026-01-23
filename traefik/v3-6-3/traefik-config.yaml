@@ -1,0 +1,60 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: traefik-cfg
+  namespace: traefik
+data:
+  traefik.yaml: |-
+    serversTransport:
+      insecureSkipVerify: true
+
+    api:
+      insecure: true
+      dashboard: true
+      debug: true
+
+    metrics:
+      prometheus: ""
+
+    entryPoints:
+      web:
+        address: ":80"
+      websecure:
+        address: ":443"
+      metrics:
+        address: ":8082"
+      tcpep:
+        address: ":8083"
+      udpep:
+        address: ":8084/udp"
+
+    providers:
+      kubernetesCRD: ""
+      kubernetesingress: ""
+      kubernetesGateway: ""
+
+    experimental:
+      kubernetesGateway: true
+
+    log:
+      filePath: ""
+      level: error
+      format: json
+
+    accessLog:
+      filePath: ""
+      format: json
+      bufferingSize: 0
+      filters:
+        retryAttempts: true
+        minDuration: 20
+      fields:
+        defaultMode: keep
+        names:
+          ClientUsername: drop
+        headers:
+          defaultMode: keep
+          names:
+            User-Agent: redact
+            Authorization: drop
+            Content-Type: keep
