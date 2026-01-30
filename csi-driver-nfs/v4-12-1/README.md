@@ -1,4 +1,8 @@
-# 一、官方仓库
+# 一、基础环境
+
+![PixPin_2026-01-31_00-17-45](./assets/PixPin_2026-01-31_00-17-45.jpg)
+
+# 二、官方仓库
 
 ```http
 https://github.com/kubernetes-csi/csi-driver-nfs/tree/v4.12.1/deploy
@@ -28,7 +32,7 @@ https://github.com/kubernetes-csi/csi-driver-nfs/blob/v4.12.1/deploy/storageclas
 https://github.com/kubernetes-csi/csi-driver-nfs/blob/v4.12.1/deploy/example/pvc-nfs-csi-dynamic.yaml
 ```
 
-# 二、镜像修改
+# 四、镜像修改
 
 ```http
 https://raw.githubusercontent.com/kubernetes-csi/csi-driver-nfs/refs/tags/v4.12.1/deploy/csi-nfs-controller.yaml
