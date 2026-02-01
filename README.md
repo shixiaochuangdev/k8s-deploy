@@ -7,4 +7,5 @@ k8s集群中常见软件部署：
 |  03  |        metallb         |        metallb部署         |
 |  04  | IngressNginxController | IngressNginxController部署 |
 |  05  |        openelb         |        openelb部署         |
+|  06  |       prometheus       |       prometheus部署       |
 

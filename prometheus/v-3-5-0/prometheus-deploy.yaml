@@ -1,0 +1,70 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: prometheus
+  namespace: prometheus-ns
+  labels:
+    app: prometheus
+spec:
+  selector:
+    matchLabels:
+      app: prometheus
+  template:
+    metadata:
+      labels:
+        app: prometheus
+    spec:
+      serviceAccountName: prometheus
+      securityContext:
+        runAsUser: 65534        # Prometheus 默认用户 UID（nobody）
+        fsGroup: 65534          # 确保挂载的 volume 属于该组，自动 chown
+      containers:
+        - image: shixiaochuangk8s/prometheus:v3.5.0
+          imagePullPolicy: IfNotPresent
+          name: prometheus
+          args:
+            - '--config.file=/etc/prometheus/prometheus.yml'
+            - '--storage.tsdb.path=/prometheus' # 指定tsdb数据路径
+            - '--storage.tsdb.retention.time=24h'
+            - '--web.enable-admin-api' # 控制对admin HTTP API的访问，其中包括删除时间序列等功能
+            - '--web.enable-lifecycle' # 支持热更新，直接执行localhost:9090/-/reload立即生效
+          ports:
+            - containerPort: 9090
+              name: http
+          volumeMounts:
+            - mountPath: '/etc/prometheus'
+              name: config-volume
+            - mountPath: '/prometheus'
+              name: data
+          resources:
+            requests:
+              cpu: 200m
+              memory: 1024Mi
+            limits:
+              cpu: 200m
+              memory: 1024Mi
+          livenessProbe: # 存活探针
+            httpGet:
+              path: /-/healthy
+              port: 9090
+            initialDelaySeconds: 30
+            periodSeconds: 30
+            timeoutSeconds: 5
+            failureThreshold: 3
+
+          readinessProbe: # 就绪性探针
+            httpGet:
+              path: /-/ready
+              port: 9090
+            initialDelaySeconds: 5
+            periodSeconds: 5
+            timeoutSeconds: 3
+            failureThreshold: 3
+
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: prometheus-pvc
+        - configMap:
+            name: prometheus-config
+          name: config-volume

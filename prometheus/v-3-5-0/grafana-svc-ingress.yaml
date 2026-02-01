@@ -1,0 +1,32 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: grafana
+  namespace: grafana-ns
+spec:
+  selector:
+    app: grafana
+  ports:
+    - port: 3000
+      targetPort: 3000
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: grafana
+  namespace: grafana-ns
+  labels:
+    app: grafana
+spec:
+  ingressClassName: 'nginx'
+  rules:
+  - host: grafana.shixiaochuang.org
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: grafana
+            port:
+              number: 3000

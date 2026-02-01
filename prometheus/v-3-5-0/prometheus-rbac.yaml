@@ -1,0 +1,43 @@
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: prometheus
+rules:
+  # 定义权限规则
+  - apiGroups: [""] # 空字符串代表 Kubernetes 内置 API 组
+    resources:
+      - nodes # 授权对 nodes 资源的访问
+      - nodes/proxy # 授权对 nodes/proxy 资源的访问
+      - services # 授权对 services 资源的访问
+      - endpoints # 授权对 endpoints 资源的访问
+      - pods # 授权对 pods 资源的访问
+    verbs: ["get", "list", "watch"]
+  - apiGroups:
+      - extensions # 指定 extensions API 组
+      - networking.k8s.io # 指定 networking.k8s.io API 组
+    resources:
+      - ingresses # 授权对 ingresses 资源的访问
+    verbs: ["get", "list", "watch"]
+
+  - nonResourceURLs: ["/metrics"] # 定义非资源 URL /metrics 的访问权限
+    verbs: ["get"] # 允许获取（get）操作
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: prometheus
+  namespace: prometheus-ns
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: prometheus
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole # 引用的资源类型为 ClusterRole
+  name: prometheus # 引用的 ClusterRole 名称为 prometheus
+subjects:
+  - kind: ServiceAccount # 绑定的资源类型为 ServiceAccount
+    name: prometheus # 绑定的 ServiceAccount 名称为 prometheus
+    namespace: prometheus-ns
