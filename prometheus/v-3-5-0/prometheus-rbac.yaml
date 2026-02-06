@@ -1,27 +1,37 @@
----
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
   name: prometheus
 rules:
-  # 定义权限规则
-  - apiGroups: [""] # 空字符串代表 Kubernetes 内置 API 组
+  # 1. 访问 Node 及其子资源（用于 kubelet 指标）
+  - apiGroups: [""]
     resources:
-      - nodes # 授权对 nodes 资源的访问
-      - nodes/proxy # 授权对 nodes/proxy 资源的访问
-      - services # 授权对 services 资源的访问
-      - endpoints # 授权对 endpoints 资源的访问
-      - pods # 授权对 pods 资源的访问
-    verbs: ["get", "list", "watch"]
-  - apiGroups:
-      - extensions # 指定 extensions API 组
-      - networking.k8s.io # 指定 networking.k8s.io API 组
-    resources:
-      - ingresses # 授权对 ingresses 资源的访问
+      - nodes
+      - nodes/proxy
+      - nodes/metrics
+      - nodes/stats
     verbs: ["get", "list", "watch"]
 
-  - nonResourceURLs: ["/metrics"] # 定义非资源 URL /metrics 的访问权限
-    verbs: ["get"] # 允许获取（get）操作
+  # 2. 服务发现所需资源
+  - apiGroups: [""]
+    resources:
+      - services
+      - endpoints
+      - pods
+    verbs: ["get", "list", "watch"]
+
+  # 3. Ingress 支持（可选）
+  - apiGroups:
+      - extensions
+      - networking.k8s.io
+    resources:
+      - ingresses
+    verbs: ["get", "list", "watch"]
+
+  # 4.允许访问 API Server 的 /metrics
+  - nonResourceURLs:
+      - "/metrics"
+    verbs: ["get"]
 ---
 apiVersion: v1
 kind: ServiceAccount

@@ -42,6 +42,10 @@ kubectl apply -f prometheus-svc.yaml
 kubectl apply -f prometheus-ingress.yaml
 ```
 
+```sh
+kubectl apply -f prometheus-traefik.yaml
+```
+
 ```http
 http://prometheusui.shixiaochuang.org
 ```
