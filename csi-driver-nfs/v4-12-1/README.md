@@ -156,7 +156,9 @@ kubectl -n kube-system get pod -o wide -l app=csi-nfs-node
 
 ![PixPin_2026-01-19_23-47-51](./assets/PixPin_2026-01-19_23-47-51.jpg)
 
-准备nfs的服务器
+准备nfs的服务器：
+
+红帽系列：
 
 ```sh
 dnf install rpcbind -y
@@ -188,6 +190,27 @@ cat /proc/fs/nfsd/versions
 
 ![PixPin_2026-01-19_23-53-05](./assets/PixPin_2026-01-19_23-53-05.jpg)
 
+ubuntu系列：
+
+```sh
+apt update
+```
+
+```sh
+apt install nfs-kernel-server -y
+```
+
+```sh
+systemctl enable --now nfs-server
+```
+
+```sh
+#查看支持的NFS版本,注意:只有服务启动才能看此文件
+cat /proc/fs/nfsd/versions
+```
+
+![PixPin_2026-02-07_19-17-36](./assets/PixPin_2026-02-07_19-17-36.jpg)
+
 ```sh
 # 准备一个共享目录
 mkdir /opt/data/csi-nfs -pv
@@ -213,7 +236,9 @@ exportfs
 
 ![PixPin_2026-01-19_23-55-14](./assets/PixPin_2026-01-19_23-55-14.jpg)
 
-要在的每个node节点上都安装下nfs，这样的目的是为了node节点可以驱动nfs设备
+要在的每个node节点上都安装下nfs，这样的目的是为了node节点可以驱动nfs设备:
+
+红帽系列：
 
 ```sh
 dnf install rpcbind -y
@@ -225,6 +250,16 @@ dnf install nfs-utils -y
 
 ```sh
 systemctl enable --now rpcbind
+```
+
+ubuntu系列：
+
+```sh
+sudo apt update
+```
+
+```sh
+sudo apt install -y nfs-common
 ```
 
 ```sh
