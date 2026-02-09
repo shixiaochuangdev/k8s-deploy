@@ -1,0 +1,101 @@
+# =========================
+# Calico 核心安装配置
+# =========================
+apiVersion: operator.tigera.io/v1
+kind: Installation
+metadata:
+  # Calico Operator 约定俗成的固定名称，必须是 default
+  # 改成其它名字会导致 Operator 不识别该配置
+  name: default
+spec:
+  calicoNetwork:
+    # -------------------------
+    # 节点 IP 自动探测配置（非常关键）
+    # -------------------------
+    nodeAddressAutodetectionV4:
+      # 指定 Calico 使用哪一块物理网卡作为 Node IP
+      # 目的：
+      # 1. 避免选到 kube-ipvs0 / cni0 等虚拟网卡
+      # 2. 确保 Pod 间通信走正确的物理网络
+      # 适用于：
+      # - VMware / KVM 虚拟机
+      # - 单网卡节点
+      interface: ens160
+
+    # -------------------------
+    # Pod IP 池配置（必须与 kubeadm podSubnet 一致）
+    # -------------------------
+    ipPools:
+      - name: default-ipv4-ippool
+
+        # 每个节点分配的 Pod 子网大小
+        # /26 = 每节点最多 64 个 Pod
+        # 常见推荐值，资源利用率和路由规模比较均衡
+        blockSize: 26
+
+        #  Pod 网络 CIDR
+        # 必须与 kubeadm.yaml 中的 podSubnet 完全一致
+        # kubeadm:
+        #   networking:
+        #     podSubnet: 10.244.0.0/16
+        cidr: 10.244.0.0/16
+
+        # 封装模式说明：
+        # VXLANCrossSubnet：
+        # - 同一二层子网内：不封装（性能好）
+        # - 跨三层子网：使用 VXLAN（兼容性强）
+        # 是生产环境中非常常见、稳妥的选择
+        encapsulation: VXLANCrossSubnet
+
+        # Pod 访问集群外网络时是否做 SNAT
+        # Enabled 表示：
+        # - Pod 出集群访问外部网络正常
+        # - 绝大多数场景都需要开启
+        natOutgoing: Enabled
+
+        # 该 IP 池适用于哪些节点
+        # all() 表示集群中所有节点都可使用该 IP 池
+        nodeSelector: all()
+
+---
+# =========================
+# Calico API Server
+# =========================
+apiVersion: operator.tigera.io/v1
+kind: APIServer
+metadata:
+  # 同样必须是 default，Operator 固定识别
+  name: default
+spec: { }
+# 说明：
+# - 提供 Calico API 能力（NetworkPolicy 等）
+# - 对基础网络转发不是必需
+# - 保留不会有副作用，可用于后续扩展
+
+---
+# =========================
+# Calico Goldmane（流量观测组件）
+# =========================
+apiVersion: operator.tigera.io/v1
+kind: Goldmane
+metadata:
+  # 固定名称
+  name: default
+# 说明：
+# - 用于流量可观测性（Flow Logs / Metrics）
+# - 不影响网络转发
+# - 资源占用较低，可保留
+
+---
+# =========================
+# Calico Whisker（可视化 UI）
+# =========================
+apiVersion: operator.tigera.io/v1
+kind: Whisker
+metadata:
+  # 固定名称
+  name: default
+# 说明：
+# - 提供 Calico 的 Web UI
+# - 纯观测/展示组件
+# - 不影响集群网络功能
