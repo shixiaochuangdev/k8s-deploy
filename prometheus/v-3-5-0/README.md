@@ -15,7 +15,7 @@
 ![PixPin_2026-02-01_16-08-02](./assets/PixPin_2026-02-01_16-08-02.jpg)
 
 ```sh
-kubectl create namespace prometheus-ns
+kubectl create namespace monitor-ns
 ```
 
 ```sh
@@ -30,6 +30,25 @@ kubectl apply -f prometheus-rbac.yaml
 kubectl apply -f prometheus-cfg.yaml
 ```
 
+关于配置文件的说明：
+
+```sh
+# 默认配置文件
+kubectl apply -f prometheus-cfg.yaml
+```
+
+```sh
+# 包含service的自动发现
+kubectl apply -f prometheus-cfg-service.yaml
+```
+
+```sh
+# 包含service的自动发现
+kubectl apply -f prometheus-cfg-ksm.yaml
+```
+
+
+
 ```sh
 kubectl apply -f prometheus-deploy.yaml
 ```
@@ -40,10 +59,6 @@ kubectl apply -f prometheus-svc.yaml
 
 ```sh
 kubectl apply -f prometheus-ingress.yaml
-```
-
-```sh
-kubectl apply -f prometheus-traefik.yaml
 ```
 
 ```http
