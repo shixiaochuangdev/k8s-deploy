@@ -23,7 +23,7 @@ data:
             labels:
               app: "prometheus"
 
-      - job_name: "service"
+      - job_name: "kubernetes-service"
         kubernetes_sd_configs:
           - role: endpoints
 

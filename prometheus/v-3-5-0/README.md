@@ -4,16 +4,6 @@
 
 # 二、部署
 
-前提：
-
-1、集群中存在动态供给
-
-![PixPin_2026-02-01_16-07-21](./assets/PixPin_2026-02-01_16-07-21.jpg)
-
-2、集群中存在ingress nginx controller
-
-![PixPin_2026-02-01_16-08-02](./assets/PixPin_2026-02-01_16-08-02.jpg)
-
 ```sh
 kubectl create namespace monitor-ns
 ```
@@ -24,10 +14,6 @@ kubectl apply -f prometheus-pvc.yaml
 
 ```sh
 kubectl apply -f prometheus-rbac.yaml
-```
-
-```sh
-kubectl apply -f prometheus-cfg.yaml
 ```
 
 关于配置文件的说明：
@@ -43,11 +29,14 @@ kubectl apply -f prometheus-cfg-service.yaml
 ```
 
 ```sh
-# 包含service的自动发现
+# 包含kube-state-metrics
 kubectl apply -f prometheus-cfg-ksm.yaml
 ```
 
-
+```sh
+# 包含pods的自动发现
+kubectl apply -f prometheus-cfg-pod.yaml
+```
 
 ```sh
 kubectl apply -f prometheus-deploy.yaml
@@ -67,9 +56,29 @@ http://prometheusui.shixiaochuang.org
 
 ![image-20260201161156624](./assets/image-20260201161156624.png)
 
+或者：
+
 ```sh
-kubectl create namespace grafana-ns
+kubectl apply -f prometheus-traefik.yaml
 ```
+
+```http
+http://prometheusui.shixiaochuang.net
+```
+
+![PixPin_2026-03-07_21-45-07](./assets/PixPin_2026-03-07_21-45-07.jpg)
+
+或者：
+
+```sh
+kubectl apply -f prometheus-gatewayapi.yaml
+```
+
+```http
+http://prometheusui.shixiaochuang.io/query
+```
+
+![PixPin_2026-03-07_21-58-22](./assets/PixPin_2026-03-07_21-58-22.jpg)
 
 ```sh
 kubectl apply -f grafana-pvc.yaml
@@ -87,15 +96,43 @@ kubectl apply -f grafana-admin-secret.yaml
 kubectl apply -f grafana-deploy.yaml
 ```
 
+```shell
+kubectl apply -f grafana-svc.yaml
+```
+
 ```sh
-kubectl apply -f grafana-svc-ingress.yaml
+kubectl apply -f grafana-ingress.yaml
+```
+
+```http
+http://grafana.shixiaochuang.org/login
 ```
 
 ![image-20260201162410378](./assets/image-20260201162410378.png)
 
+或者：
 
+```sh
+kubectl apply -f grafana-traefik.yaml
+```
 
+```http
+http://grafana.shixiaochuang.net/login
+```
 
+![PixPin_2026-03-07_22-12-57](./assets/PixPin_2026-03-07_22-12-57.jpg)
+
+或者：
+
+```sh
+kubectl apply -f grafana-gatewayapi.yaml
+```
+
+```http
+http://grafana.shixiaochuang.io/login
+```
+
+![PixPin_2026-03-07_22-16-21](./assets/PixPin_2026-03-07_22-16-21.jpg)
 
 
 

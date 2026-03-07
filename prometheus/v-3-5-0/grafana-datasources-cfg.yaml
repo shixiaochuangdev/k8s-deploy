@@ -2,7 +2,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: grafana-datasources
-  namespace: grafana-ns
+  namespace: monitor-ns
 data:
   prometheus.yaml: |-
     {
@@ -12,7 +12,7 @@ data:
           "name": "prometheus",
           "type": "prometheus",
           "access": "proxy",
-          "url": "http://prometheus.prometheus-ns.svc.cluster.local:9090",
+          "url": "http://prometheus.monitor-ns.svc.cluster.local:9090",
           "orgId": 1,
           "editable": true,
           "version": 1

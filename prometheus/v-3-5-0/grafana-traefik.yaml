@@ -1,16 +1,14 @@
 apiVersion: traefik.io/v1alpha1
 kind: IngressRoute
 metadata:
-  name: prometheus
+  name: grafana
   namespace: monitor-ns
-  labels:
-    app: prometheus
 spec:
   entryPoints:
     - web
   routes:
-    - match: Host(`prometheusui.shixiaochuang.net`)
+    - match: Host(`grafana.shixiaochuang.net`)
       kind: Rule
       services:
-        - name: prometheus
-          port: 9090
+        - name: grafana
+          port: 3000

@@ -1,0 +1,43 @@
+# ==========================================
+# Gateway: 定义入口监听器
+# ==========================================
+apiVersion: gateway.networking.k8s.io/v1
+kind: Gateway
+metadata:
+  name: prometheus-gateway
+  namespace: monitor-ns
+spec:
+  gatewayClassName: traefik
+  listeners:
+    - name: http
+      protocol: HTTP
+      port: 80
+      # 可选：限制允许的主机名，增强安全性
+      # hostname: "prometheusui.shixiaochuang.io"
+
+---
+# ==========================================
+# HTTPRoute: 定义路由规则
+# ==========================================
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: prometheus-route
+  namespace: monitor-ns
+spec:
+  # 绑定到上游 Gateway
+  parentRefs:
+    - name: prometheus-gateway
+      namespace: monitor-ns  # 跨命名空间引用时需显式指定
+
+  # 匹配的主机名（域名）
+  hostnames:
+    - "prometheusui.shixiaochuang.io"
+
+  # 路由规则
+  rules:
+    - backendRefs:
+        - name: prometheus
+          port: 9090
+          # 可选：指定后端服务所在命名空间
+          # namespace: monitor-ns

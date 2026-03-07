@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: grafana
-  namespace: grafana-ns
+  namespace: monitor-ns
 spec:
   replicas: 1
   selector:
