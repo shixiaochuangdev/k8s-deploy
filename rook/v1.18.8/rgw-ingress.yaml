@@ -1,0 +1,43 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: rook-ceph-rgw-my-store-lb
+  namespace: rook-ceph
+  labels:
+    app: rook-ceph-rgw
+    ceph_objectstore: my-store
+spec:
+  type: LoadBalancer
+  ports:
+    - name: http
+      port: 80
+      targetPort: 80
+  selector:
+    app: rook-ceph-rgw
+    ceph_objectstore: my-store
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: rgw-ingress
+  namespace: rook-ceph
+  annotations:
+    # NGINX 特定配置
+    nginx.ingress.kubernetes.io/proxy-body-size: "0"        # 允许任意大文件上传
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "3600"  # 大文件下载超时
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "3600"
+    nginx.ingress.kubernetes.io/proxy-buffering: "off"      # 流式传输
+
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: s3.shixiaochuang.org
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: rook-ceph-rgw-my-store
+                port:
+                  number: 80
