@@ -1,23 +1,23 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: traefik-svc
-  namespace: traefik
+  name: traefik
+  namespace: gateway-api
   annotations:
     lb.kubesphere.io/v1alpha1: openelb
     protocol.openelb.kubesphere.io/v1alpha1: layer2
     eip.openelb.kubesphere.io/v1alpha2: eip-pool
 spec:
   type: LoadBalancer
+  selector:
+    app: traefik
   ports:
     - name: web
       protocol: TCP
       port: 80
+      targetPort: web
+
     - name: websecure
       protocol: TCP
       port: 443
-    - name: admin
-      protocol: TCP
-      port: 8080
-  selector:
-    app: traefik
+      targetPort: websecure

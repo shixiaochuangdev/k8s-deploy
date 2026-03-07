@@ -1,0 +1,69 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: traefik-gateway-controller
+rules:
+  # Core resources
+  - apiGroups: [ "" ]
+    resources:
+      - services
+      - secrets
+      - endpoints
+      - configmaps
+      - nodes
+      - namespaces
+    verbs: [ "get", "list", "watch" ]
+
+  # EndpointSlice
+  - apiGroups: [ "discovery.k8s.io" ]
+    resources:
+      - endpointslices
+    verbs: [ "get", "list", "watch" ]
+
+  # Gateway API resources
+  - apiGroups: [ "gateway.networking.k8s.io" ]
+    resources:
+      - gatewayclasses
+      - gateways
+      - httproutes
+      - tcproutes
+      - udproutes
+      - tlsroutes
+      - grpcroutes
+      - referencegrants
+      - backendtlspolicies
+    verbs: [ "get", "list", "watch" ]
+
+  # Status update permissions
+  - apiGroups: [ "gateway.networking.k8s.io" ]
+    resources:
+      - gateways/status
+      - gatewayclasses/status
+      - httproutes/status
+      - tcproutes/status
+      - udproutes/status
+      - tlsroutes/status
+      - grpcroutes/status
+    verbs: [ "update", "patch" ]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: traefik-gateway-controller
+
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: traefik-gateway-controller
+
+subjects:
+  - kind: ServiceAccount
+    name: traefik-gateway-controller
+    namespace: gateway-api
+
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: traefik-gateway-controller
+  namespace: gateway-api
