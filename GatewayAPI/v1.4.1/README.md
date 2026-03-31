@@ -31,6 +31,7 @@ kubectl get pods -n gateway-api
 ![PixPin_2026-03-07_20-40-01](./assets/PixPin_2026-03-07_20-40-01.jpg)
 
 ```sh
+# 请提前部署openelb
 kubectl apply -f traefik-service.yaml
 ```
 

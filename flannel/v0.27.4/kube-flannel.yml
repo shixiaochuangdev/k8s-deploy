@@ -130,7 +130,7 @@ spec:
       - args:
         - --ip-masq
         - --kube-subnet-mgr
-        - -iface=ens33  # 如果是多网卡的话，指定内网网卡的名称
+        - -iface=ens160  # 如果是多网卡的话，指定内网网卡的名称
         command:
         - /opt/bin/flanneld
         env:
