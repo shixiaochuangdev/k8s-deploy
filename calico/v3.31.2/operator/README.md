@@ -4,11 +4,23 @@
 
 # 二、镜像修改
 
+````http
+https://raw.githubusercontent.com/projectcalico/calico/refs/tags/v3.31.2/manifests/tigera-operator.yaml
+````
 
+![PixPin_2026-04-22_15-46-58](./assets/PixPin_2026-04-22_15-46-58.jpg)
 
+```sh
+docker pull quay.io/tigera/operator:v1.40.2
+```
 
+```sh
+docker tag quay.io/tigera/operator:v1.40.2 shixiaochuangk8s/tigera-operator:v1.40.2
+```
 
-
+```sh
+docker push shixiaochuangk8s/tigera-operator:v1.40.2
+```
 
 # 三、实战部署
 
